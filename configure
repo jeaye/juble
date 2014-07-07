@@ -147,8 +147,12 @@ log "Systems:"
 [[ $system_documentation == 1 ]] && log "    documentation"
 log
 
+log_start "Updating submodules..."
+git submodule update --init --recursive 2>&1 > /dev/null
+log_end " done"
+
 # Configure the makefile
-log "Populating Makefile"
+log_start "Populating Makefile..."
 rm -f Makefile
 sed "s#%CXX_PLATFORM_FLAGS%#${cxx_platform_flags}#" ./Makefile.in |\
 sed "s#%LD_PLATFORM_LIBS%#${ld_platform_libs}#" |\
@@ -156,9 +160,10 @@ sed "s#%PREFIX%#${prefix}#" |\
 sed "s#%DATAROOTDIR%#${datarootdir}#" |\
 sed "s#%PROJECT%#${project}#" |\
 sed "s#%THREADS%#${threads}#" > Makefile
+log_end " done"
 
 # Update source files, if needed
-log "Patching source files"
+log_start "Patching source files..."
 systems=
 [[ $system_chai == 1 ]] && systems="chai, "$systems
 [[ $system_documentation == 1 ]] && systems="documentation, "$systems
@@ -172,6 +177,7 @@ cat > src/gen_config.hpp <<EOF
 #define JUBLE_DOCUMENTATION $system_documentation
 #define JUBLE_SYSTEMS $systems
 EOF
+log_end " done"
 
 log "Done configuring ${project}"
 
