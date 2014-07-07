@@ -15,33 +15,33 @@ class person
 {
   public:
     person(std::string const &name, int16_t const age)
-      : m_name(name), m_age(age)
+      : name_{ name }, age_{ age }
     { }
 
     std::string const& get_name() const
-    { return m_name; }
+    { return name_; }
     void set_name(std::string const &name)
-    { m_name = name; }
+    { name_ = name; }
     int16_t get_age() const
-    { return m_age; }
+    { return age_; }
 
     bool alive{ true };
 
   private:
-    std::string m_name;
-    int16_t m_age{};
-    static script::registration<person> const m_registration;
+    std::string name_;
+    int16_t age_{};
+    static script::registration<person> const registration_;
 };
 
-script::registration<person> const person::m_registration
+script::registration<person> const person::registration_
 {
-  script::type<person>("person", "Example type representing a simple humanoid"),
-  script::ctor<person (std::string const&, int16_t const)>("person", "Constructor taking a name and age"),
-  script::ctor<person (person const&)>("person", "Copy constructor"),
-  script::mem_func(&person::get_name, "get_name", "Accessor for name"),
-  script::mem_func(&person::set_name, "set_name", "Mutator for name"),
-  script::mem_func(&person::get_age, "get_age", "Acessor for age"),
-  script::mem_var(&person::alive, "is_alive", "Whether or not the person is alive")
+  script::type<person>("person"),
+  script::ctor<person (std::string const&, int16_t const)>("person"),
+  script::ctor<person (person const&)>("person"),
+  script::mem_func(&person::get_name, "get_name"),
+  script::mem_func(&person::set_name, "set_name"),
+  script::mem_func(&person::get_age, "get_age"),
+  script::mem_var(&person::alive, "is_alive")
 };
 
 struct car
@@ -55,19 +55,17 @@ struct car
   void drive()
   { std::cout << "vroom" << std::endl; }
 
-  make const m_make{ make::ford };
-  static script::registration<car> const m_registration;
+  make const make_{ make::ford };
+  static script::registration<car> const registration_;
 };
 
-script::registration<car> const car::m_registration
+script::registration<car> const car::registration_
 {
-  script::type<car>("car",
-      "An automotive vehicle"),
-  script::ctor<car ()>("car",
-      "Default constructor"),
-  script::ctor<car (car const&)>("car", "Copy constructor"),
-  script::mem_func(&car::drive, "drive", "Drives the car"),
-  script::mem_var(&car::m_make, "make", "The make of the car")
+  script::type<car>("car"),
+  script::ctor<car ()>("car"),
+  script::ctor<car (car const&)>("car"),
+  script::mem_func(&car::drive, "drive"),
+  script::mem_var(&car::make_, "make")
 };
 
 int main()
@@ -75,13 +73,12 @@ int main()
   try
   {
     script::registrar::add(script::func(&say, "say"));
-    script::registrar::describe();
 
     //script::system<script::chai>::use("src/scripts/chai/test.chai");
     //script::system<script::chai>::eval("say_hi();");
 
     std::cout << "----------------------------------" << std::endl;
-    //script::system<script::documentation>::dump_data();
+    script::system<script::documentation>::dump_data();
   }
   catch(std::exception const &e)
   { std::cerr << "exception: " << e.what() << std::endl; }

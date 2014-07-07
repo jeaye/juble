@@ -117,7 +117,6 @@ namespace script
             if(type_.first.size())
             { throw std::runtime_error{ "type for free functions already specified" }; }
             type_.first = entry.name;
-            type_.second = "None";
           }
           template <typename S>
           void add(type<S> const &entry)
@@ -125,7 +124,6 @@ namespace script
             if(type_.first.size())
             { throw std::runtime_error{ "type already specified" }; }
             type_.first = entry.name;
-            type_.second = entry.description;
           }
           template <typename S>
           void add(ctor<S> const &entry)
@@ -133,7 +131,7 @@ namespace script
               (entry.name + " [" +
               type_name<S>()
               + "]"),
-              entry.description }); }
+              "" }); }
           template <typename S>
           void add(func_impl<S> const &)
           { }
@@ -143,14 +141,14 @@ namespace script
               (entry.name + " [" +
               type_name<typename std::remove_cv<decltype(entry.base_func)>::type>()
               + "]"),
-              entry.description }); }
+              "" }); }
           template <typename... Ss>
           void add(mem_var_impl<Ss...> const &entry)
           { mem_vars_.push_back({
               (entry.name + " [" +
               type_name<typename std::remove_cv<decltype(entry.func)>::type>()
               + "]"),
-              entry.description }); }
+              "" }); }
           template <typename S>
           void add(var_impl<S> const &)
           { }
@@ -165,26 +163,25 @@ namespace script
           std::string to_string() const override
           {
             std::stringstream ss;
-            ss << type_.first
-               << "\n  " << type_.second << std::endl;
+            ss << type_.first << std::endl;
 
             if(ctors_.size())
             {
               ss << "\n  ctors " << "\n      ";
               for(auto const &it : ctors_)
-              { ss << it.first << "\n        " << it.second << "\n      "; }
+              { ss << it.first << "\n      "; }
             }
             if(mem_funcs_.size())
             {
               ss << "\n  member functions\n      ";
               for(auto const &it : mem_funcs_)
-              { ss << it.first << "\n        " << it.second << "\n      "; }
+              { ss << it.first << "\n      "; }
             }
             if(mem_vars_.size())
             {
               ss << "\n  member variables\n      ";
               for(auto const &it : mem_vars_)
-              { ss << it.first << "\n        " << it.second << "\n      "; }
+              { ss << it.first << "\n      "; }
             }
 
             return ss.str();

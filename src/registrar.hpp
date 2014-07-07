@@ -13,16 +13,22 @@ namespace script
   class registrar_impl
   {
     public:
+      registrar_impl()
+      {
+        int const _[]
+        {(
+            std::cout << "enabled system: "
+                      << system_traits<Systems>::name
+                      << std::endl
+            , 0)...
+        };
+        (void)_;
+      }
+
       static registrar_impl& get()
       {
         static registrar_impl r;
         return r;
-      }
-
-      static void describe()
-      {
-        int const dummy[]{ (std::cout << "enabled system: " << system_traits<Systems>::name << std::endl, 0)... };
-        (void)dummy;
       }
 
       /* Recurse through each of the provided args. */
