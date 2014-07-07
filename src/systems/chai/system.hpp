@@ -11,7 +11,6 @@ namespace script
 {
   struct chai
   {};
-  struct chai_impl;
 
   template <>
   class system<chai>

@@ -13,7 +13,13 @@ namespace script
   class registrar_impl
   {
     public:
-      registrar_impl()
+      static registrar_impl& get()
+      {
+        static registrar_impl r;
+        return r;
+      }
+
+      static void show_enabled()
       {
         int const _[]
         {(
@@ -23,12 +29,6 @@ namespace script
             , 0)...
         };
         (void)_;
-      }
-
-      static registrar_impl& get()
-      {
-        static registrar_impl r;
-        return r;
       }
 
       /* Recurse through each of the provided args. */

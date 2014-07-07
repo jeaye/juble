@@ -72,13 +72,15 @@ int main()
 {
   try
   {
+    script::registrar::show_enabled();
+
     script::registrar::add(script::func(&say, "say"));
 
     //script::system<script::chai>::use("src/scripts/chai/test.chai");
     //script::system<script::chai>::eval("say_hi();");
 
     std::cout << "----------------------------------" << std::endl;
-    script::system<script::documentation>::dump_data();
+    //script::system<script::documentation>::dump_data();
   }
   catch(std::exception const &e)
   { std::cerr << "exception: " << e.what() << std::endl; }

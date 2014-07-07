@@ -34,6 +34,7 @@ fi
 log() { echo "$@" 1>&2; }
 log_start() { printf "$@" 1>&2; }
 log_end() { echo "$@" 1>&2; }
+log_exit() { echo "$@" 1>&2; exit 1; }
 
 project=juble
 log "Configuring ${project}"
@@ -46,6 +47,7 @@ ld_platform_libs=
 
 # Project-specific flags
 system_chai=1
+system_ruby=1
 system_documentation=1
 
 if [ "1" -eq "$uname_linux" ];
@@ -73,6 +75,7 @@ function show_help
   log
   log "Systems: (all systems are enabled by default)"
   log "  --disable-chai                               Disable the chai system"
+  log "  --disable-ruby                               Disable the ruby system"
   log "  --disable-documentation                      Disable the documentation system"
   log
   exit 0
@@ -119,6 +122,11 @@ do
       shift
       ;;
 
+    --disable-ruby)
+      system_ruby=0
+      shift
+      ;;
+
     --disable-documentation)
       system_documentation=0
       shift
@@ -144,8 +152,15 @@ log "Install data prefix: $datarootdir"
 log "Compilation threads: $threads"
 log "Systems:"
 [[ $system_chai == 1 ]] && log "    chai"
+[[ $system_ruby == 1 ]] && log "    ruby"
 [[ $system_documentation == 1 ]] && log "    documentation"
 log
+
+# Verify there is at least one system
+[[ $system_chai == 1 \
+|| $system_ruby == 1 \
+|| $system_documentation == 1 \
+]] || log_exit "No valid systems enabled"
 
 log_start "Updating submodules..."
 git submodule update --init --recursive 2>&1 > /dev/null
@@ -165,8 +180,9 @@ log_end " done"
 # Update source files, if needed
 log_start "Patching source files..."
 systems=
-[[ $system_chai == 1 ]] && systems="chai, "$systems
 [[ $system_documentation == 1 ]] && systems="documentation, "$systems
+[[ $system_ruby == 1 ]] && systems="ruby, "$systems
+[[ $system_chai == 1 ]] && systems="chai, "$systems
 systems=$(echo $systems | sed 's/,$//')
 cat > src/gen_config.hpp <<EOF
 /* This file was automagically generated; don't fuck with it.
@@ -174,6 +190,7 @@ cat > src/gen_config.hpp <<EOF
 #pragma once
 
 #define JUBLE_CHAI $system_chai
+#define JUBLE_RUBY $system_ruby
 #define JUBLE_DOCUMENTATION $system_documentation
 #define JUBLE_SYSTEMS $systems
 EOF

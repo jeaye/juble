@@ -33,6 +33,6 @@ namespace script
   template <typename T>
   struct system_traits
   {
-    static auto constexpr const name{ "unknown" };
+    static char constexpr const * const name{ "unknown" };
   };
 }
