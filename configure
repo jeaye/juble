@@ -1,0 +1,181 @@
+#!/bin/bash
+
+# Re-invoke the configure script
+# and keep the output at bay.
+if [ "$1" != "quiet" ];
+then
+  $0 "quiet" $@ > /dev/null
+  exit $?
+fi
+shift
+
+set -o errexit
+set -o nounset
+
+# Determine system
+uname_linux=0
+uname_cygwin=0
+uname_osx=0
+uname=$(uname)
+if [ "$uname" = "Linux" ];
+then
+  uname_linux=1
+elif [ "$uname" = "Darwin" ];
+then
+  uname_osx=1
+elif [ "$(uname -o)" = "Cygwin" ];
+then
+  uname_cygwin=1
+else
+  echo "Invalid uname ($uname): unsuppported platform" 1>&2
+  exit 1
+fi
+
+log() { echo "$@" 1>&2; }
+log_start() { printf "$@" 1>&2; }
+log_end() { echo "$@" 1>&2; }
+
+project=juble
+log "Configuring ${project}"
+
+prefix=/usr/local
+datarootdir="$prefix/include/${project}"
+threads=4
+cxx_platform_flags=
+ld_platform_libs=
+
+# Project-specific flags
+system_chai=1
+system_documentation=1
+
+if [ "1" -eq "$uname_linux" ];
+then
+  log "Platform: Linux"
+elif [ "1" -eq "$uname_osx" ];
+then
+  log "Platform: OS X"
+  cxx_platform_flags="-stdlib=libc++ -I/opt/local/include"
+  ld_platform_libs="-lc++"
+elif [ "1" -eq "$uname_cygwin" ];
+then
+  log "Platform: Cygwin (NOT TESTED)"
+fi
+
+function show_help
+{
+  log "Usage: $0 [OPTION...]"
+  log
+  log "General:"
+  log "  -h, --help                                   Show this help message"
+  log "  --prefix=[/usr/local]                        Set installation prefix"
+  log "  --datarootdir=[/usr/local/include/juble]     Set data root prefix"
+  log "  --threads=[4]                                Set number of threads to use"
+  log
+  log "Systems: (all systems are enabled by default)"
+  log "  --disable-chai                               Disable the chai system"
+  log "  --disable-documentation                      Disable the documentation system"
+  log
+  exit 0
+}
+
+# Parse params
+for i in "$@"
+do
+  case $i in
+    --prefix)
+      shift
+      prefix="$1"
+      datarootdir=$PREFIX/include
+      shift
+      ;;
+    --prefix=*)
+      prefix="${i#*=}"
+      datarootdir=$PREFIX/include
+      shift
+      ;;
+
+    --datarootdir)
+      shift
+      datarootdir="$1"
+      shift
+      ;;
+    --datarootdir=*)
+      datarootdir="${i#*=}"
+      shift
+      ;;
+
+    --threads)
+      shift
+      threads=$1
+      shift
+      ;;
+    --threads=*)
+      threads=${i#*=}
+      shift
+      ;;
+
+    --disable-chai)
+      system_chai=0
+      shift
+      ;;
+
+    --disable-documentation)
+      system_documentation=0
+      shift
+      ;;
+
+    -h)
+      show_help
+      ;;
+    --help*)
+      show_help
+      ;;
+
+    *)
+      # Unknown option
+      ;;
+  esac
+done
+
+# Update after params
+log
+log "Install prefix: $prefix"
+log "Install data prefix: $datarootdir"
+log "Compilation threads: $threads"
+log "Systems:"
+[[ $system_chai == 1 ]] && log "    chai"
+[[ $system_documentation == 1 ]] && log "    documentation"
+log
+
+# Configure the makefile
+log "Populating Makefile"
+rm -f Makefile
+sed "s#%CXX_PLATFORM_FLAGS%#${cxx_platform_flags}#" ./Makefile.in |\
+sed "s#%LD_PLATFORM_LIBS%#${ld_platform_libs}#" |\
+sed "s#%PREFIX%#${prefix}#" |\
+sed "s#%DATAROOTDIR%#${datarootdir}#" |\
+sed "s#%PROJECT%#${project}#" |\
+sed "s#%THREADS%#${threads}#" > Makefile
+
+# Update source files, if needed
+log "Patching source files"
+systems=
+[[ $system_chai == 1 ]] && systems="chai, "$systems
+[[ $system_documentation == 1 ]] && systems="documentation, "$systems
+systems=$(echo $systems | sed 's/,$//')
+cat > src/gen_config.hpp <<EOF
+/* This file was automagically generated; don't fuck with it.
+ * To change the contents of this file, use the configure script. */
+#pragma once
+
+#define JUBLE_CHAI $system_chai
+#define JUBLE_DOCUMENTATION $system_documentation
+#define JUBLE_SYSTEMS $systems
+EOF
+
+log "Done configuring ${project}"
+
+# Describe next steps
+log
+log "To run tests, use \`make && make test\`"
+log "To install headers, use \`make install\` with the appropriate permissions for your prefix"
