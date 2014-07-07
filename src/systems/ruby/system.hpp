@@ -4,10 +4,11 @@
 
 namespace script
 {
-  struct ruby{};
+  struct ruby final
+  {};
 
   template <>
-  class system<ruby>
+  class system<ruby> final
   {
     public:
       static system& get()

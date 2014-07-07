@@ -9,11 +9,11 @@
 
 namespace script
 {
-  struct chai
+  struct chai final
   {};
 
   template <>
-  class system<chai>
+  class system<chai> final
   {
     public:
       static system& get()
@@ -87,7 +87,7 @@ namespace script
       chaiscript::ChaiScript chai_;
   };
   template <>
-  struct system_traits<chai>
+  struct system_traits<chai> final
   {
     static char constexpr const * const name{ "chai" };
   };

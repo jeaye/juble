@@ -7,7 +7,7 @@ namespace script
 {
   /* Specialize this interface for any new script systems. */
   template <typename T>
-  class system
+  class system final
   {
     public:
       [[noreturn]] static system& get()
@@ -31,7 +31,7 @@ namespace script
 
   /* Specialize to describe your system. */
   template <typename T>
-  struct system_traits
+  struct system_traits final
   {
     static char constexpr const * const name{ "unknown" };
   };

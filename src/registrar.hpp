@@ -10,7 +10,7 @@ namespace script
 {
   /* Templated on each of the enabled systems. */
   template <typename... Systems>
-  class registrar_impl
+  class registrar_impl final
   {
     public:
       static registrar_impl& get()
@@ -70,7 +70,7 @@ namespace script
   /* Use to register classes to the script systems.
    * [Hard] Limit only one per class. */
   template <typename T>
-  struct registration
+  struct registration final
   {
     template <typename... Args>
     registration(Args &&... args)

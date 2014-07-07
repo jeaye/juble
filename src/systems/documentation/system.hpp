@@ -14,13 +14,13 @@
 
 namespace script
 {
-  struct documentation
+  struct documentation final
   {};
 
   template <>
-  class system<documentation>
+  class system<documentation> final
   {
-    struct free_functions
+    struct free_functions final
     { std::string const name; }; 
 
     public:
@@ -100,7 +100,7 @@ namespace script
         virtual std::string to_string() const = 0;
       };
       template <typename T>
-      class object : public concept
+      class object final : public concept
       {
         public:
           static object& get()
@@ -200,7 +200,7 @@ namespace script
       std::vector<concept*> objects_;
   };
   template <>
-  struct system_traits<documentation>
+  struct system_traits<documentation> final
   {
     static char constexpr const * const name{ "documentation" };
   };
