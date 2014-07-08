@@ -11,10 +11,10 @@
 void say(std::string const &msg)
 { std::cout << msg << std::endl; }
 
-class person
+class person final
 {
   public:
-    person(std::string const &name, int16_t const age)
+    explicit person(std::string const &name, int16_t const age)
       : name_{ name }, age_{ age }
     { }
 
@@ -44,7 +44,7 @@ script::registration<person> const person::registration_
   script::mem_var(&person::alive, "is_alive")
 };
 
-struct car
+struct car final
 {
   enum class make
   { ford, honda };

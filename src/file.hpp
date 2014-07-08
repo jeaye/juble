@@ -4,6 +4,6 @@
 
 namespace script
 {
-  struct file
+  struct file final
   { std::string data; };
 }
