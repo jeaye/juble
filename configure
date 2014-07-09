@@ -57,7 +57,7 @@ elif [ "1" -eq "$uname_osx" ];
 then
   log "Platform: OS X"
   cxx_platform_flags="-stdlib=libc++ -I/opt/local/include"
-  ld_platform_libs="-lc++"
+  ld_platform_libs="-lc++ -framework CoreFoundation"
 elif [ "1" -eq "$uname_cygwin" ];
 then
   log "Platform: Cygwin (NOT TESTED)"
@@ -163,7 +163,8 @@ log
 ]] || log_exit "No valid systems enabled"
 
 log_start "Updating submodules..."
-git submodule update --init --recursive 2>&1 > /dev/null
+[[ $system_chai == 1 ]] && log_start " chai" && git submodule update --init --recursive lib/chai 2>&1 > /dev/null || true
+[[ $system_ruby == 1 ]] && log_start " ruby" && git submodule update --init --recursive lib/ruby 2>&1 > /dev/null || true
 log_end " done"
 
 # Configure the makefile
@@ -194,6 +195,10 @@ cat > src/gen_config.hpp <<EOF
 #define JUBLE_DOCUMENTATION $system_documentation
 #define JUBLE_SYSTEMS $systems
 EOF
+log_end " done"
+
+log_start "Building dependencies..."
+[[ $system_ruby == 1 ]] && log_start " ruby" && cd lib/ruby && autoconf && ./configure && make -j8 2>&1 /dev/null
 log_end " done"
 
 log "Done configuring ${project}"

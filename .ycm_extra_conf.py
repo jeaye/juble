@@ -12,6 +12,7 @@ flags = [
 'c++',
 '-Isrc',
 '-Ilib/chaiscript/include',
+'-Ilib/ruby/include',
 
 '-isystem',
 '../BoostParts',
