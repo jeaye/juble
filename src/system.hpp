@@ -3,6 +3,8 @@
 #include <stdexcept>
 #include <string>
 
+#include "assert.hpp"
+
 namespace script
 {
   /* Specialize this interface for any new script systems. */
@@ -26,7 +28,7 @@ namespace script
       { die(); }
 
       [[noreturn]] static void die() 
-      { throw std::runtime_error{ "system not implemented" }; }
+      { juble_assert(false, "system not implemented"); }
   };
 
   /* Specialize to describe your system. */
