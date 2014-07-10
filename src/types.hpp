@@ -32,7 +32,7 @@ namespace script
     { }
 
     std::function<Ret (Args...)> const func;
-    std::string const name;
+    std::string const name; /* TODO: registrar::name_list for name-per-system */
   };
 
   template <typename T>

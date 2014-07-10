@@ -74,6 +74,25 @@ struct car final
   make const make_{ make::ford };
 };
 
+struct test
+{
+  int data{};
+};
+
+template <typename T>
+VALUE alloc(VALUE class_value)
+{
+  T ** const ptr{ new T*{} };
+  VALUE const obj{ Data_Wrap_Struct(class_value, nullptr,
+      [](void * const t)
+      {
+        T ** const ptr{ static_cast<T**>(t) };
+        delete *ptr;
+        delete ptr;
+      }, ptr) };
+  return obj;
+}
+
 int main()
 {
   try
@@ -82,6 +101,15 @@ int main()
 
     person::register_api();
     car::register_api();
+
+    //static VALUE const value{ rb_define_class("Test", rb_cObject) };
+    //rb_undef_alloc_func(value);
+    //rb_define_alloc_func(value, &alloc<test>);
+    //rb_undef_method(value, "initialize");
+    //rb_define_method(value, "initialize", (VALUE (*)(ANYARGS))&init<test>, -1);
+    //rb_define_method(value, "work", (VALUE (*)(ANYARGS))&work<test>, 0);
+    //script::ruby_system::eval("t = Test.new(42)\nt.work\nt.work\nt.work");
+    //return 0;
 
     script::registrar::add(script::func(&say, "say"));
 

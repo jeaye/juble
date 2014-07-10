@@ -5,6 +5,7 @@
 
 #include "config.hpp"
 #include "gen_config.hpp"
+#include "assert.hpp"
 
 namespace script
 {
@@ -75,11 +76,8 @@ namespace script
     template <typename... Args>
     registration(Args &&... args)
     {
-      if(created)
-      {
-        throw std::runtime_error
-        { std::string{ "already registered script class: " } + typeid(T).name() };
-      }
+      juble_assert(!created, 
+        std::string{ "already registered script class: " } + typeid(T).name());
       created = true;
 
       registrar::add(std::forward<Args>(args)...);

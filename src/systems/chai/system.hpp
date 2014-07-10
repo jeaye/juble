@@ -24,7 +24,7 @@ namespace script
 
       template <template <typename...> class T, typename... E>
       void add(T<E...> const &)
-      { throw std::runtime_error{ "unknown chai system entry" }; }
+      { juble_assert(false, "unknown chai system entry"); }
       template <typename S>
       void add(type<S> const &entry)
       { chai_.add(chaiscript::user_type<S>(), entry.name); }
@@ -49,7 +49,7 @@ namespace script
 
       template <template <typename...> class T, typename E>
       void add_global(T<E> const &)
-      { throw std::runtime_error{ "unknown chai global type" }; }
+      { juble_assert(false, "unknown chai global type"); }
       template <typename S, std::enable_if_t<!std::is_const<S>::value>>
       void add_global(global_var_impl<S> const &entry)
       { chai_.add_global(chaiscript::var(entry.value), entry.name); }

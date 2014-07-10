@@ -11,6 +11,7 @@
 
 #include "system.hpp"
 #include "types.hpp"
+#include "assert.hpp"
 
 namespace script
 {
@@ -111,18 +112,17 @@ namespace script
 
           template <template <typename...> class S, typename... Es>
           void add(S<Es...> const &)
-          { throw std::runtime_error{ "unknown documentation system entry" }; }
+          { juble_assert(false, "unknown documentation system entry"); }
           void add(free_functions const &entry)
           { 
-            if(type_.first.size())
-            { throw std::runtime_error{ "type for free functions already specified" }; }
+            juble_assert(type_.first.empty(),
+                         "type for free functions already specified");
             type_.first = entry.name;
           }
           template <typename S>
           void add(type<S> const &entry)
           {
-            if(type_.first.size())
-            { throw std::runtime_error{ "type already specified" }; }
+            juble_assert(type_.first.empty(), "type already specified");
             type_.first = entry.name;
           }
           template <typename S>
@@ -155,7 +155,7 @@ namespace script
 
           template <template <typename...> class S, typename E>
           void add_global(S<E> const &)
-          { throw std::runtime_error{ "unknown documentation global type" }; }
+          { juble_assert(false, "unknown documentation global type"); }
           template <typename S>
           void add_global(global_var_impl<S> const &)
           { }
