@@ -21,6 +21,7 @@ namespace script
     value_type value_class(std::string const &name)
     {
       static value_type const value{ rb_define_class(name.c_str(), rb_cObject) };
+      
       rb_undef_alloc_func(value);
       rb_define_alloc_func(value, [](value_type const value)
       { 
