@@ -69,7 +69,7 @@ namespace script
         rb_define_method(ruby_detail::value_class<C>(entry.name),
             entry.name.c_str(),
             reinterpret_cast<ruby_detail::any_func_t>(&ruby_detail::mem_func_wrapper<C, F>::call),
-                              function_taits<F>::arg_count()); /* TODO: argc */
+            ruby_detail::callback_argc);
       }
       template <typename G>
       void add_global(G const & /* entry */)

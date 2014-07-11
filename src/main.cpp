@@ -102,7 +102,7 @@ int main()
 
     script::ruby_system::eval("c = Car.new\nc.drive\nc.drive\nc.drive");
     script::ruby_system::eval("p = Person.new_age(22)\np.talk");
-    script::ruby_system::eval("p = Person.new_shit('Bob', -13)\np.talk");
+    script::ruby_system::eval("p = Person.new_shit('Bob', -13)\np.talk\nprint p.get_age");
     script::ruby_system::eval("\np = Person.new_shit('Gary', 41)\np.talk\np2 = Person.new_copy(p)\np2.talk\np.talk");
 
     std::cout << "----------------------------------" << std::endl;

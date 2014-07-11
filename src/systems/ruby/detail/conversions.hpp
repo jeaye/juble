@@ -21,11 +21,25 @@ namespace script
     { return TYPE(value); }
 #undef TYPE
 
-    /* TODO: to/from_ruby_impl with an enabler. */
+    /* TODO: to_ruby string, array, etc. from_ruby array, etc. */
+    template <typename T, typename E = void>
+    struct to_ruby_impl final
+    {
+      static value_type convert(T const&)
+      {
+        /* TODO: Class types. */
+        return Qnil;
+      }
+    };
     template <typename T>
-    value_type to_ruby(T const &)
-    { return 0; }
-
+    struct to_ruby_impl<T, std::enable_if_t<std::is_integral<T>::value>> final
+    {
+      static value_type convert(T const data)
+      { return INT2NUM(data); }
+    };
+    template <typename T>
+    value_type to_ruby(T const &data)
+    { return to_ruby_impl<T>::convert(data); }
 
     template <typename T, typename P>
     T regulate(std::unique_ptr<P> &data, std::enable_if_t<!(std::is_reference<T>::value || std::is_pointer<T>::value)>* = nullptr)
@@ -65,5 +79,15 @@ namespace script
     template <typename T>
     decltype(auto) from_ruby(value_type const value)
     { return from_ruby_impl<T>::convert(value); }
+
+
+    template <typename T, typename F, typename... Args>
+    std::enable_if_t<std::is_void<T>::value, value_type>
+      build_return_value(F const &f, Args &&... args)
+    { f(std::forward<Args>(args)...); return Qnil; }
+    template <typename T, typename F, typename... Args>
+    std::enable_if_t<!std::is_void<T>::value, value_type>
+      build_return_value(F const &f, Args &&... args)
+    { return to_ruby<T>(f(std::forward<Args>(args)...)); }
   }
 }
