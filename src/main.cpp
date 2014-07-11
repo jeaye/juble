@@ -14,7 +14,11 @@ void say(std::string const &msg)
 class person final
 {
   public:
-    person() = default; /* TODO: this is required */
+    person() = delete;
+    person(person const&) = default;
+    person(person &p)
+      : name_{ p.name_ + "2" }, age_{ p.age_ }
+    { p.name_ += " (dead)"; p.age_ = 0; }
     explicit person(int16_t const age)
       : name_{ "Jeaye" }, age_{ age }
     { }
@@ -29,7 +33,7 @@ class person final
         script::type<person>("Person"),
         script::ctor<person (int16_t const)>("new_age"),
         script::ctor<person (std::string const&, int16_t const)>("new_shit"),
-        script::ctor<person (person const&)>("new_copy"),
+        script::ctor<person (person &)>("new_copy"),
         script::mem_func(&person::get_name, "get_name"),
         script::mem_func(&person::set_name, "set_name"),
         script::mem_func(&person::get_age, "get_age"),
@@ -99,6 +103,7 @@ int main()
     script::ruby_system::eval("c = Car.new\nc.drive\nc.drive\nc.drive");
     script::ruby_system::eval("p = Person.new_age(22)\np.talk");
     script::ruby_system::eval("p = Person.new_shit('Bob', -13)\np.talk");
+    script::ruby_system::eval("\np = Person.new_shit('Gary', 41)\np.talk\np2 = Person.new_copy(p)\np2.talk\np.talk");
 
     std::cout << "----------------------------------" << std::endl;
     //script::system<script::documentation>::dump_data();

@@ -12,6 +12,8 @@ namespace script
   struct chai final
   {};
 
+  /* TODO: Provide static functions for ctors and normal ctors. */
+
   template <>
   class system<chai> final
   {

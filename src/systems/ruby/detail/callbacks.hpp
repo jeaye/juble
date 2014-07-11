@@ -1,7 +1,6 @@
 #pragma once
 
 #include <functional>
-#include <memory>
 
 #include "conversions.hpp"
 
@@ -31,9 +30,11 @@ namespace script
         /* TODO: All of these call functions are the same; refactor. */
         static R call(value_type const self, Args &&... args) 
         {
+          using uptr_t = std::unique_ptr<detail::bare_t<Class>>;
+
           juble_assert(func_, "invalid function call");
-          std::unique_ptr<Class> * data{};
-          Data_Get_Struct(self, std::unique_ptr<Class>, data);
+          uptr_t * data{};
+          Data_Get_Struct(self, uptr_t, data);
           juble_assert(data && data->get(), "invalid object data");
           return func_(*(*data), std::forward<Args>(args)...);
         }
@@ -51,9 +52,11 @@ namespace script
 
         static R call(value_type const self, Args &&... args)
         {
+          using uptr_t = std::unique_ptr<detail::bare_t<Class>>;
+
           juble_assert(func_, "invalid function call");
-          std::unique_ptr<Class> * data{};
-          Data_Get_Struct(self, std::unique_ptr<Class>, data);
+          uptr_t * data{};
+          Data_Get_Struct(self, uptr_t, data);
           juble_assert(data && data->get(), "invalid object data");
           return func_(*(*data), std::forward<Args>(args)...);
         }
@@ -78,14 +81,16 @@ namespace script
 
         static value_type call(int const argc, value_type * const argv, value_type const self)
         {
+          using uptr_t = std::unique_ptr<detail::bare_t<Class>>;
+
           juble_assert(func_, "invalid ctor call");
           juble_assert(sizeof...(Args) == argc, "invalid argument count");
 
-          auto * const data(new std::unique_ptr<Class>
+          auto * const data(new uptr_t
           { call_impl(std::index_sequence_for<Args...>{}, argv) });
 
           auto const deleter([](void * const data)
-          { delete static_cast<std::unique_ptr<Class>*>(data); });
+          { delete static_cast<uptr_t*>(data); });
 
           value_type const obj{ Data_Wrap_Struct(self, nullptr, deleter, data) };
           return obj;
