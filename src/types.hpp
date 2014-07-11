@@ -27,11 +27,11 @@ namespace script
     /* ctors are non-addressable, so wrap them in a lambda function. */
     explicit ctor(std::string const &name)
       /* XXX: explicitly call ctor; do not use an initializer_list */
-      : func{ [](Args &&... args){ return Ret(std::forward<Args>(args)...); } } 
+      : func{ [](Args &&... args){ return new Ret(std::forward<Args>(args)...); } } 
       , name{ name }
     { }
 
-    std::function<Ret (Args...)> const func;
+    std::function<Ret* (Args...)> const func;
     std::string const name; /* TODO: registrar::name_list for name-per-system */
   };
 

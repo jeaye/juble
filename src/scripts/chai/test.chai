@@ -1,6 +1,6 @@
 def say_hi()
 {
-  var p = person("Jesse", 22);
+  var p = Person("Joob", 22);
   p.set_name("Jeaye");
   say("Name: " + p.get_name());
   say("Age: " + p.get_age().to_string());
@@ -10,6 +10,6 @@ def say_hi()
   p.is_alive = alive;
   say("Alive: " + p.is_alive.to_string());
 
-  var c = car();
+  var c = Car();
   c.drive();
 }

@@ -15,6 +15,9 @@ class person final
 {
   public:
     person() = default; /* TODO: this is required */
+    explicit person(int16_t const age)
+      : name_{ "Jeaye" }, age_{ age }
+    { }
     explicit person(std::string const &name, int16_t const age)
       : name_{ name }, age_{ age }
     { }
@@ -24,14 +27,19 @@ class person final
       script::registration<person> const registration
       {
         script::type<person>("Person"),
-        script::ctor<person (std::string const&, int16_t const)>("person"),
-        script::ctor<person (person const&)>("person"),
+        script::ctor<person (int16_t const)>("new_age"),
+        script::ctor<person (std::string const&, int16_t const)>("new_shit"),
+        script::ctor<person (person const&)>("new_copy"),
         script::mem_func(&person::get_name, "get_name"),
         script::mem_func(&person::set_name, "set_name"),
         script::mem_func(&person::get_age, "get_age"),
+        script::mem_func(&person::talk, "talk"),
         script::mem_var(&person::alive, "is_alive")
       };
     }
+
+    void talk() const
+    { std::cout << name_ << ": " << age_ << std::endl; }
 
     std::string const& get_name() const
     { return name_; }
@@ -60,8 +68,8 @@ struct car final
     script::registration<car> const registration
     {
       script::type<car>("Car"),
-      script::ctor<car ()>("car"),
-      script::ctor<car (car const&)>("car"),
+      script::ctor<car ()>("Car"),
+      script::ctor<car (car const&)>("Car"),
       script::mem_func(&car::drive, "drive"),
       script::mem_var(&car::make_, "make")
     };
@@ -116,8 +124,8 @@ int main()
     //script::system<script::chai>::use("src/scripts/chai/test.chai");
     //script::system<script::chai>::eval("say_hi();");
 
-    script::ruby_system::eval("c = Car.new\nc.drive\nc.drive\nc.drive");
-    script::ruby_system::eval("p = Person.new");
+    //script::ruby_system::eval("c = Car.new\nc.drive\nc.drive\nc.drive");
+    script::ruby_system::eval("p = Person.new_age(22)\np.talk");
 
     std::cout << "----------------------------------" << std::endl;
     //script::system<script::documentation>::dump_data();
