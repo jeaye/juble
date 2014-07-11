@@ -54,7 +54,7 @@ namespace script
 
     template <typename T>
     T from_ruby(value_type const)
-    { static typename std::remove_reference<T>::type t; return t; }
+    { static typename std::remove_reference<T>::type t{}; return t; }
 
     template <>
     int16_t from_ruby<int16_t>(value_type const value)
