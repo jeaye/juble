@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <memory>
+#include <utility>
 
 #include "system.hpp"
 #include "types.hpp"
@@ -23,36 +24,41 @@ namespace script
     { return TYPE(value); }
 #undef TYPE
 
+    /* value_type func(value_type const self, value_type const arg...) */
+    inline int callback_variadic(int const n)
+    { return n; }
+    /* value_type func(int const argc, value_type * const argv, value_type const self) */
+    int constexpr const callback_argc{ -1 };
+    /* value_type func(value_type const self, value_type const args_arr) */
+    int constexpr const callback_array{ -2 };
+
     template <typename T>
     value_type value_class(std::string const &name)
     {
       static value_type const value{ rb_define_class(name.c_str(), rb_cObject) };
-      
-      rb_undef_alloc_func(value);
-      rb_define_alloc_func(value, [](value_type const value)
-      { 
-        auto * const data(new std::unique_ptr<T>);
-        auto const deleter([](void * const t)
-        { delete static_cast<std::unique_ptr<T>*>(t); });
-
-        value_type const obj{ Data_Wrap_Struct(value, nullptr, deleter, data) };
-        return obj;
-      });
 
       rb_undef_method(value, "initialize");
       auto const init(static_cast<ruby_detail::unary_func_t>(
       [](ruby_detail::value_type const self)
-      {
-        std::cout << "initializing object" << std::endl;
-        std::unique_ptr<T> * ptr{};
-        Data_Get_Struct(self, std::unique_ptr<T>, ptr);
-        (*ptr).reset(new T{});
-        return self;
-      }));
+      { return self; }));
       rb_define_method(value, "initialize",
               reinterpret_cast<ruby_detail::any_func_t>(init), 0);
       return value;
     }
+
+    /* TODO: to/from_ruby_impl with an enabler. */
+    template <typename T>
+    value_type to_ruby(T const &)
+    { return 0; }
+
+
+    template <typename T>
+    T from_ruby(value_type const)
+    { static typename std::remove_reference<T>::type t; return t; }
+
+    template <>
+    int16_t from_ruby<int16_t>(value_type const value)
+    { return NUM2INT(value); }
 
     template <typename Class, typename F>
     class mem_func_wrapper;
@@ -108,23 +114,38 @@ namespace script
     {
       public:
         ctor_wrapper() = delete;
-        ctor_wrapper(std::function<Class (Args...)> const &func)
+        ctor_wrapper(std::function<Class* (Args...)> const &func)
         { func_ = func; }
 
-        static Class call(value_type const self, Args &&... args)
+        /* TODO: should take argc and iterate with param pack */
+        static value_type call(int const argc, value_type * const argv, value_type const self)
         {
           juble_assert(func_, "invalid ctor call");
-          std::unique_ptr<Class> * data{};
-          Data_Get_Struct(self, std::unique_ptr<Class>, data);
-          juble_assert(data && data->get(), "invalid object data");
-          return func_(*(*data), std::forward<Args>(args)...);
+          juble_assert(sizeof...(Args) == argc, "invalid argument count");
+
+          auto * const data(new std::unique_ptr<Class>
+          { call_impl(std::index_sequence_for<Args...>{}, argv) });
+
+          auto const deleter([](void * const data)
+          { delete static_cast<std::unique_ptr<Class>*>(data); });
+
+          value_type const obj{ Data_Wrap_Struct(self, nullptr, deleter, data) };
+          return obj;
         }
 
       private:
-        static std::function<Class (Args...)> func_;
+        template <size_t... Ns>
+        static Class* call_impl(std::index_sequence<Ns...> const,
+                                value_type * const argv)
+        {
+          (void)argv; /* XXX: When Ns is 0, argv is not used. */
+          return func_(from_ruby<Args>(argv[Ns])...);
+        }
+
+        static std::function<Class* (Args...)> func_;
     };
     template <typename Class, typename... Args>
-    std::function<Class (Args...)> ctor_wrapper<Class (Args...)>::func_;
+    std::function<Class* (Args...)> ctor_wrapper<Class (Args...)>::func_;
   }
   
   struct ruby final
@@ -148,16 +169,23 @@ namespace script
       template <typename C, typename... Args>
       void add(ctor<C (Args...)> const &entry)
       {
-        (void)entry;
+        ruby_detail::ctor_wrapper<C (Args...)>{ entry.func };
+        rb_define_singleton_method(
+            ruby_detail::value_class<C>(entry.name),
+            entry.name.c_str(),
+            reinterpret_cast<ruby_detail::any_func_t>
+              (&ruby_detail::ctor_wrapper<C (Args...)>::call),
+            ruby_detail::callback_argc);
       }
       template <typename C, typename F>
       void add(mem_func_impl<C, F> const &entry)
       {
+        /* TODO: store somewhere? */
         ruby_detail::mem_func_wrapper<C, F>{ entry.func };
         rb_define_method(ruby_detail::value_class<C>(entry.name),
             entry.name.c_str(),
             reinterpret_cast<ruby_detail::any_func_t>(&ruby_detail::mem_func_wrapper<C, F>::call),
-                              function_taits<F>::arg_count());
+                              function_taits<F>::arg_count()); /* TODO: argc */
       }
       template <typename G>
       void add_global(G const & /* entry */)
