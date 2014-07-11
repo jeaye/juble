@@ -2,6 +2,9 @@
 
 #include <type_traits>
 #include <string>
+#include <memory>
+
+#include "traits/attributes.hpp"
 
 #include "../lib/ruby/include/ruby.h"
 
@@ -24,11 +27,28 @@ namespace script
     { return 0; }
 
 
+    template <typename T, typename P>
+    T regulate(std::unique_ptr<P> &data, std::enable_if_t<!(std::is_reference<T>::value || std::is_pointer<T>::value)>* = nullptr)
+    { return *data; }
+    template <typename T, typename P>
+    T& regulate(std::unique_ptr<P> &data, std::enable_if_t<std::is_reference<T>::value>* = nullptr)
+    { return *data; }
+    template <typename T, typename P>
+    T* regulate(std::unique_ptr<P> &data, std::enable_if_t<std::is_pointer<T>::value>* = nullptr)
+    { return data.get(); }
+
     template <typename T, typename E = void>
     struct from_ruby_impl final
     {
-      static T convert(value_type const)
-      { static typename std::remove_reference<T>::type t{}; return t; }
+      static T& convert(value_type const value)
+      {
+        using uptr_t = std::unique_ptr<detail::bare_t<T>>;
+
+        uptr_t * data{};
+        Data_Get_Struct(value, uptr_t, data);
+        juble_assert(data && (*data).get(), "invalid object data");
+        return regulate<T>(*data);
+      }
     };
     template <typename T>
     struct from_ruby_impl<T, std::enable_if_t<std::is_integral<T>::value>> final
@@ -43,7 +63,7 @@ namespace script
       { return { RSTRING_PTR(value) }; }
     };
     template <typename T>
-    auto from_ruby(value_type const value)
+    decltype(auto) from_ruby(value_type const value)
     { return from_ruby_impl<T>::convert(value); }
   }
 }
