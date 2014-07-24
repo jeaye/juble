@@ -3,9 +3,9 @@
 #include <string>
 #include <stdexcept>
 
-#include "config.hpp"
-#include "gen_config.hpp"
-#include "assert.hpp"
+#include <juble/detail/config.hpp>
+#include <juble/detail/gen_config.hpp>
+#include <juble/detail/assert.hpp>
 
 namespace script
 {

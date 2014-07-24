@@ -4,9 +4,7 @@
 #include <memory>
 #include <cstdint>
 
-#include "types.hpp"
-#include "system.hpp"
-#include "registrar.hpp"
+#include <juble/juble.hpp>
 
 void say(std::string const &msg)
 { std::cout << msg << std::endl; }

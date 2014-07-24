@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include <string>
 
-#include "assert.hpp"
+#include <juble/detail/assert.hpp>
 
 namespace script
 {

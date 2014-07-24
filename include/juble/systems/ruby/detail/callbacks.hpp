@@ -2,7 +2,7 @@
 
 #include <functional>
 
-#include "conversions.hpp"
+#include <juble/systems/ruby/detail/conversions.hpp>
 
 namespace script
 {

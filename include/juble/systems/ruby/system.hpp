@@ -4,13 +4,13 @@
 #include <memory>
 #include <utility>
 
-#include "system.hpp"
-#include "types.hpp"
-#include "traits/function.hpp"
-#include "traits/attributes.hpp"
-#include "assert.hpp"
+#include <juble/system.hpp>
+#include <juble/types.hpp>
+#include <juble/detail/traits/function.hpp>
+#include <juble/detail/traits/attributes.hpp>
+#include <juble/detail/assert.hpp>
 
-#include "detail/callbacks.hpp"
+#include <juble/systems/ruby/detail/callbacks.hpp>
 
 namespace script
 {
