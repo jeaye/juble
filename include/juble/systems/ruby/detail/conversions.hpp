@@ -4,7 +4,7 @@
 #include <string>
 #include <memory>
 
-#include "traits/attributes.hpp"
+#include <juble/detail/traits/attributes.hpp>
 
 #include "../lib/ruby/include/ruby.h"
 

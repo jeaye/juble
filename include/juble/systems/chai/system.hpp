@@ -1,8 +1,8 @@
 #pragma once
 
-#include "system.hpp"
-#include "types.hpp"
-#include "file.hpp"
+#include <juble/system.hpp>
+#include <juble/types.hpp>
+#include <juble/file.hpp>
 
 #include <chaiscript/chaiscript.hpp>
 #include <chaiscript/chaiscript_stdlib.hpp>
@@ -71,8 +71,8 @@ namespace script
       static void eval(file const &f)
       { get().chai_.eval_file(f.data); }
 
-      static void use(std::string const &file)
-      { get().chai_.use(file); }
+      static void use(file const &file)
+      { get().chai_.use(file.data); }
 
       template <typename T>
       static T get(std::string const &name)

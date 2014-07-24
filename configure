@@ -40,7 +40,7 @@ project=juble
 log "Configuring ${project}"
 
 prefix=/usr/local
-datarootdir="$prefix/include/${project}"
+includedir="$prefix/include/${project}"
 threads=4
 cxx_platform_flags=
 ld_platform_libs=
@@ -71,7 +71,7 @@ function show_help
   log "General:"
   log "  -h, --help                                   Show this help message"
   log "  --prefix=[/usr/local]                        Set installation prefix"
-  log "  --datarootdir=[/usr/local/include/juble]     Set data root prefix"
+  log "  --includedir=[/usr/local/include]            Set data root prefix"
   log "  --threads=[4]                                Set number of threads to use"
   log
   log "Systems: (all systems are enabled by default)"
@@ -89,22 +89,22 @@ do
     --prefix)
       shift
       prefix="$1"
-      datarootdir=$PREFIX/include
+      includedir=$PREFIX/include
       shift
       ;;
     --prefix=*)
       prefix="${i#*=}"
-      datarootdir=$PREFIX/include
+      includedir=$PREFIX/include
       shift
       ;;
 
-    --datarootdir)
+    --includedir)
       shift
-      datarootdir="$1"
+      includedir="$1"
       shift
       ;;
-    --datarootdir=*)
-      datarootdir="${i#*=}"
+    --includedir=*)
+      includedir="${i#*=}"
       shift
       ;;
 
@@ -149,7 +149,7 @@ done
 # Update after params
 log
 log "Install prefix: $prefix"
-log "Install data prefix: $datarootdir"
+log "Install include prefix: $includedir"
 log "Compilation threads: $threads"
 log "Systems:"
 [[ $system_chai == 1 ]] && log "    chai"
@@ -181,7 +181,7 @@ rm -f Makefile
 sed "s#%CXX_PLATFORM_FLAGS%#${cxx_platform_flags}#" ./Makefile.in |\
 sed "s#%LD_PLATFORM_LIBS%#${ld_platform_libs}#" |\
 sed "s#%PREFIX%#${prefix}#" |\
-sed "s#%DATAROOTDIR%#${datarootdir}#" |\
+sed "s#%INCLUDEDIR%#${includedir}#" |\
 sed "s#%PROJECT%#${project}#" |\
 sed "s#%THREADS%#${threads}#" > Makefile
 log_end " done"
@@ -193,7 +193,7 @@ systems=
 [[ $system_ruby == 1 ]] && systems="ruby, "$systems
 [[ $system_chai == 1 ]] && systems="chai, "$systems
 systems=$(echo $systems | sed 's/,$//')
-cat > src/gen_config.hpp <<EOF
+cat > include/$project/detail/gen_config.hpp <<EOF
 /* This file was automagically generated; don't fuck with it.
  * To change the contents of this file, use the configure script. */
 #pragma once

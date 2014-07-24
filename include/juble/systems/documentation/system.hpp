@@ -9,9 +9,9 @@
 #include "geordi/type_strings.hpp"
 #include <boost/algorithm/string.hpp>
 
-#include "system.hpp"
-#include "types.hpp"
-#include "assert.hpp"
+#include <juble/system.hpp>
+#include <juble/types.hpp>
+#include <juble/detail/assert.hpp>
 
 namespace script
 {
