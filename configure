@@ -40,7 +40,7 @@ project=juble
 log "Configuring ${project}"
 
 prefix=/usr/local
-includedir="$prefix/include/${project}"
+includedir="$prefix/include"
 threads=4
 cxx_platform_flags=
 ld_platform_libs=
@@ -71,7 +71,7 @@ function show_help
   log "General:"
   log "  -h, --help                                   Show this help message"
   log "  --prefix=[/usr/local]                        Set installation prefix"
-  log "  --includedir=[/usr/local/include]            Set data root prefix"
+  log "  --includedir=[/usr/local/include]            Set include root prefix"
   log "  --threads=[4]                                Set number of threads to use"
   log
   log "Systems: (all systems are enabled by default)"
