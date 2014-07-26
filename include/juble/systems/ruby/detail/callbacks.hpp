@@ -1,6 +1,7 @@
 #pragma once
 
 #include <functional>
+#include <map>
 
 #include <juble/systems/ruby/detail/conversions.hpp>
 
@@ -131,28 +132,41 @@ namespace script
     class func_wrapper<R (Args...)>
     {
       public:
-        func_wrapper(std::function<R (Args...)> const &func)
-        { func_ = func; }
+        static void add(std::function<R (Args...)> const &func,
+                        std::string const &name)
+        {
+          juble_assert(funcs_.find(name) == funcs_.end(),
+                       "non-member function already exists");
+          funcs_[name] = func;
+        }
 
         static value_type call(int const argc, value_type * const argv,
-                               value_type const)
+                               value_type const )
         {
+          auto const callee(rb_funcall(rb_mKernel, rb_intern("__callee__"), 0));
+          auto const name(RSTRING_PTR(rb_funcall(callee, rb_intern("to_s"), 0)));
+          auto const it(funcs_.find(name));
+
+          juble_assert(it != funcs_.end(),
+                       std::string{ "unknown non-member function: " } + name);
           juble_assert(sizeof...(Args) == argc, "invalid argument count");
-          return call_impl(std::index_sequence_for<Args...>{}, argv);
+
+          return call_impl(it->second, std::index_sequence_for<Args...>{}, argv);
         }
 
       private:
         template <size_t... Ns>
-        static value_type call_impl(std::index_sequence<Ns...> const,
+        static value_type call_impl(std::function<R (Args...)> const &f,
+                                    std::index_sequence<Ns...> const,
                                     value_type * const argv)
         {
           (void)argv; /* XXX: When Ns is 0, argv is not used. */
-          return build_return_value<R>(func_, from_ruby<Args>(argv[Ns])...);
+          return build_return_value<R>(f, from_ruby<Args>(argv[Ns])...);
         }
 
-        static std::function<R (Args...)> func_;
+        static std::map<std::string, std::function<R (Args...)>> funcs_;
     };
     template <typename R, typename... Args>
-    std::function<R (Args...)> func_wrapper<R (Args...)>::func_{};
+    std::map<std::string, std::function<R (Args...)>> func_wrapper<R (Args...)>::funcs_;
   }
 }

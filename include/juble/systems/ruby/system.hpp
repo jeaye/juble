@@ -64,7 +64,7 @@ namespace script
       template <typename F>
       void add(func_impl<F> const &entry)
       {
-        static ruby_detail::func_wrapper<F> func{ entry.func };
+        ruby_detail::func_wrapper<F>::add(entry.func, entry.name);
         rb_define_global_function(entry.name.c_str(),
             reinterpret_cast<ruby_detail::any_func_t>(&ruby_detail::func_wrapper<F>::call),
             ruby_detail::callback_argc);
