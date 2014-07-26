@@ -48,7 +48,6 @@ ld_platform_libs=
 # Project-specific flags
 system_chai=1
 system_ruby=1
-system_documentation=1
 
 if [ "1" -eq "$uname_linux" ];
 then
@@ -77,7 +76,6 @@ function show_help
   log "Systems: (all systems are enabled by default)"
   log "  --disable-chai                               Disable the chai system"
   log "  --disable-ruby                               Disable the ruby system"
-  log "  --disable-documentation                      Disable the documentation system"
   log
   exit 0
 }
@@ -128,11 +126,6 @@ do
       shift
       ;;
 
-    --disable-documentation)
-      system_documentation=0
-      shift
-      ;;
-
     -h)
       show_help
       ;;
@@ -154,13 +147,11 @@ log "Compilation threads: $threads"
 log "Systems:"
 [[ $system_chai == 1 ]] && log "    chai"
 [[ $system_ruby == 1 ]] && log "    ruby"
-[[ $system_documentation == 1 ]] && log "    documentation"
 log
 
 # Verify there is at least one system
 [[ $system_chai == 1 \
 || $system_ruby == 1 \
-|| $system_documentation == 1 \
 ]] || log_exit "No valid systems enabled"
 
 log_start "Updating submodules..."
@@ -190,7 +181,6 @@ log_end " done"
 # Update source files, if needed
 log_start "Patching source files..."
 systems=
-[[ $system_documentation == 1 ]] && systems="::script::documentation_tag, "$systems
 [[ $system_ruby == 1 ]] && systems="::script::ruby_tag, "$systems
 [[ $system_chai == 1 ]] && systems="::script::chai_tag, "$systems
 systems=$(echo $systems | sed 's/,$//')
@@ -201,7 +191,6 @@ cat > include/$project/detail/gen_config.hpp <<EOF
 
 #define JUBLE_CHAI $system_chai
 #define JUBLE_RUBY $system_ruby
-#define JUBLE_DOCUMENTATION $system_documentation
 #define JUBLE_SYSTEMS $systems
 EOF
 log_end " done"
