@@ -32,10 +32,10 @@ namespace script
     }
   }
   
-  struct ruby final
+  struct ruby_tag final
   {};
   template <>
-  class system<ruby> final
+  class system<ruby_tag> final
   {
     public:
       static system& get()
@@ -59,6 +59,14 @@ namespace script
             entry.name.c_str(),
             reinterpret_cast<ruby_detail::any_func_t>
               (&ruby_detail::ctor_wrapper<C (Args...)>::call),
+            ruby_detail::callback_argc);
+      }
+      template <typename F>
+      void add(func_impl<F> const &entry)
+      {
+        static ruby_detail::func_wrapper<F> func{ entry.func };
+        rb_define_global_function(entry.name.c_str(),
+            reinterpret_cast<ruby_detail::any_func_t>(&ruby_detail::func_wrapper<F>::call),
             ruby_detail::callback_argc);
       }
       template <typename C, typename F>
@@ -93,10 +101,10 @@ namespace script
         ruby_script("juble");
       }
   };
-  using ruby_system = system<ruby>;
+  using ruby_system = system<ruby_tag>;
 
   template <>
-  struct system_traits<ruby>
+  struct system_traits<ruby_tag>
   {
     static char constexpr const * const name{ "ruby" };
   };

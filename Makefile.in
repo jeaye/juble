@@ -1,7 +1,7 @@
 # Sources
 OUT_DIR=bin/
 SOURCES= \
-				 src/test/main.cpp
+				 test/src/main.cpp
 OBJECTS=$(SOURCES:.cpp=.cpp.o)
 TEST_OBJECTS=$(SOURCES:.cpp=.test)
 TESTS=$(foreach test,$(SOURCES), $(addprefix $(OUT_DIR), $(notdir $(test))))
@@ -12,12 +12,14 @@ INCLUDEDIR=%INCLUDEDIR%
 THREADS=%THREADS%
 
 # Compiler flags
-CXX=c++
+CXX=clang++
 CXX_WARN_FLAGS=-Wall -Wextra -Werror -pedantic
 CXX_DEBUG_FLAGS=
 CXX_OPTIM_FLAGS=-O3
-CXX_INCLUDE_FLAGS=-Iinclude/ -Ilib/chaiscript/include -Ilib/ruby/include -Ilib/ruby/include/ruby
-CXX_PLATFORM_FLAGS=%CXX_PLATFORM_FLAGS%
+CXX_INCLUDE_FLAGS=-Iinclude \
+									-Itest/include -Ilib/jest/include \
+									-Ilib/chaiscript/include -Ilib/ruby/include -Ilib/ruby/include/ruby
+CXX_PLATFORM_FLAGS=%CXX_PLATFORM_FLAGS% -lc++abi
 CXX_FLAGS=-std=c++1y \
 					$(CXX_PLATFORM_FLAGS) \
 					$(CXX_INCLUDE_FLAGS) \

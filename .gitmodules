@@ -4,3 +4,6 @@
 [submodule "lib/ruby"]
 	path = lib/ruby
 	url = https://github.com/ruby/ruby.git
+[submodule "lib/jest"]
+	path = lib/jest
+	url = https://github.com/jeaye/jest.git

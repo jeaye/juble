@@ -12,6 +12,7 @@ flags = [
 'c++',
 '-Isrc',
 '-Iinclude',
+'-Itest/include',
 '-Ilib/chaiscript/include',
 '-Ilib/ruby/include',
 

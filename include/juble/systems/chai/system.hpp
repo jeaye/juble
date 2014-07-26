@@ -9,13 +9,13 @@
 
 namespace script
 {
-  struct chai final
+  struct chai_tag final
   {};
 
   /* TODO: Provide static functions for ctors and normal ctors. */
 
   template <>
-  class system<chai> final
+  class system<chai_tag> final
   {
     public:
       static system& get()
@@ -89,7 +89,7 @@ namespace script
       chaiscript::ChaiScript chai_;
   };
   template <>
-  struct system_traits<chai> final
+  struct system_traits<chai_tag> final
   {
     static char constexpr const * const name{ "chai" };
   };
