@@ -9,11 +9,8 @@
 #if JUBLE_RUBY
   #include <juble/systems/ruby/system.hpp>
 #endif
-#if JUBLE_DOCUMENTATION
-  #include <juble/systems/documentation/system.hpp>
-#endif
 
 /* Verify we have at least one system. */
-#if !JUBLE_CHAI && !JUBLE_RUBY && !JUBLE_DOCUMENTATION
+#if !JUBLE_CHAI && !JUBLE_RUBY
   #error "no valid systems enabled"
 #endif

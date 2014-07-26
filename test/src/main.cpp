@@ -105,7 +105,6 @@ int main()
     //script::ruby_system::eval("\np = Person.new_shit('Gary', 41)\np.talk\np2 = Person.new_copy(p)\np2.talk\np.talk");
 
     //std::cout << "----------------------------------" << std::endl;
-    //script::system<script::documentation>::dump_data();
   }
   catch(std::exception const &e)
   { std::cerr << "exception: " << e.what() << std::endl; }
