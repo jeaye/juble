@@ -4,8 +4,6 @@ namespace script
 {
   namespace ruby_detail
   {
-    /* TODO: Don't use these? Use a callback type templated on some format or something. */
-
     /* value_type func(value_type const self, value_type const arg...) */
     inline int callback_variadic(int const n)
     { return n; }
@@ -14,7 +12,7 @@ namespace script
     /* value_type func(value_type const self, value_type const args_arr) */
     int constexpr const callback_array{ -2 };
 
-    char const * current_method()
+    inline char const * current_method()
     {
       auto const callee(rb_funcall(rb_mKernel, rb_intern("__callee__"), 0));
       return RSTRING_PTR(rb_funcall(callee, rb_intern("to_s"), 0));
