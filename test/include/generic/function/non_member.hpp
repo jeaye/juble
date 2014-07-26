@@ -30,8 +30,12 @@ namespace script
   { return ""; }
 }
 
-#include "../../chai/function/non_member.hpp"
-#include "../../ruby/function/non_member.hpp"
+#if JUBLE_CHAI
+  #include "../../chai/function/non_member.hpp"
+#endif
+#if JUBLE_RUBY
+  #include "../../ruby/function/non_member.hpp"
+#endif
 
 namespace jest
 {

@@ -164,6 +164,7 @@ log
 ]] || log_exit "No valid systems enabled"
 
 log_start "Updating submodules..."
+log_start " jest" && git submodule update --init --recursive lib/jest 2>&1 > /dev/null || true
 [[ $system_chai == 1 ]] && log_start " chai" && git submodule update --init --recursive lib/chaiscript 2>&1 > /dev/null || true
 [[ $system_ruby == 1 ]] && log_start " ruby" && git submodule update --init --recursive lib/ruby 2>&1 > /dev/null || true
 log_end " done"
