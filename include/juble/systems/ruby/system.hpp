@@ -10,7 +10,10 @@
 #include <juble/detail/traits/attributes.hpp>
 #include <juble/detail/assert.hpp>
 
-#include <juble/systems/ruby/detail/callbacks.hpp>
+#include <juble/systems/ruby/detail/conversions.hpp>
+#include <juble/systems/ruby/detail/ctor.hpp>
+#include <juble/systems/ruby/detail/function.hpp>
+#include <juble/systems/ruby/detail/mem_function.hpp>
 
 namespace script
 {
