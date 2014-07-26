@@ -15,11 +15,11 @@
 
 namespace script
 {
-  struct documentation final
+  struct documentation_tag final
   {};
 
   template <>
-  class system<documentation> final
+  class system<documentation_tag> final
   {
     struct free_functions final
     { std::string const name; }; 
@@ -69,6 +69,9 @@ namespace script
         for(auto const &it : get().objects_)
         { std::cout << it->to_string() << std::endl; }
       }
+
+      static void eval(std::string const &)
+      { }
 
     private:
       void add(free_functions const &entry)
@@ -189,7 +192,7 @@ namespace script
 
         private:
           object()
-          { system<documentation>::get().objects_.push_back(this); }
+          { system<documentation_tag>::get().objects_.push_back(this); }
 
           std::pair<std::string, std::string> type_;
           std::vector<std::pair<std::string, std::string>> ctors_;
@@ -200,7 +203,7 @@ namespace script
       std::vector<concept*> objects_;
   };
   template <>
-  struct system_traits<documentation> final
+  struct system_traits<documentation_tag> final
   {
     static char constexpr const * const name{ "documentation" };
   };

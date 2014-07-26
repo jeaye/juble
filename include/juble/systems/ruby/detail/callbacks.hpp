@@ -124,5 +124,35 @@ namespace script
     };
     template <typename Class, typename... Args>
     std::function<Class* (Args...)> ctor_wrapper<Class (Args...)>::func_;
+
+    template <typename F>
+    class func_wrapper;
+    template <typename R, typename... Args>
+    class func_wrapper<R (Args...)>
+    {
+      public:
+        func_wrapper(std::function<R (Args...)> const &func)
+        { func_ = func; }
+
+        static value_type call(int const argc, value_type * const argv,
+                               value_type const)
+        {
+          juble_assert(sizeof...(Args) == argc, "invalid argument count");
+          return call_impl(std::index_sequence_for<Args...>{}, argv);
+        }
+
+      private:
+        template <size_t... Ns>
+        static value_type call_impl(std::index_sequence<Ns...> const,
+                                    value_type * const argv)
+        {
+          (void)argv; /* XXX: When Ns is 0, argv is not used. */
+          return build_return_value<R>(func_, from_ruby<Args>(argv[Ns])...);
+        }
+
+        static std::function<R (Args...)> func_;
+    };
+    template <typename R, typename... Args>
+    std::function<R (Args...)> func_wrapper<R (Args...)>::func_{};
   }
 }

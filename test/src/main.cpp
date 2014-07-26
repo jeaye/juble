@@ -5,6 +5,9 @@
 #include <cstdint>
 
 #include <juble/juble.hpp>
+#include <jest/jest.hpp>
+
+#include "generic/function/non_member.hpp"
 
 void say(std::string const &msg)
 { std::cout << msg << std::endl; }
@@ -90,24 +93,25 @@ int main()
   {
     script::registrar::show_enabled();
 
-    person::register_api();
-    car::register_api();
-
-    script::registrar::add(script::func(&say, "say"));
+    //person::register_api();
+    //car::register_api();
 
     //script::system<script::chai>::use("src/scripts/chai/test.chai");
     //script::system<script::chai>::eval("say_hi();");
 
-    script::ruby_system::eval("c = Car.new\nc.drive\nc.drive\nc.drive");
-    script::ruby_system::eval("p = Person.new_age(22)\np.talk");
-    script::ruby_system::eval("p = Person.new_shit('Bob', -13)\np.talk\nprint p.get_age");
-    script::ruby_system::eval("\np = Person.new_shit('Gary', 41)\np.talk\np2 = Person.new_copy(p)\np2.talk\np.talk");
+    //script::ruby_system::eval("c = Car.new\nc.drive\nc.drive\nc.drive");
+    //script::ruby_system::eval("p = Person.new_age(22)\np.talk");
+    //script::ruby_system::eval("p = Person.new_shit('Bob', -13)\np.talk\nprint p.get_age");
+    //script::ruby_system::eval("\np = Person.new_shit('Gary', 41)\np.talk\np2 = Person.new_copy(p)\np2.talk\np.talk");
 
-    std::cout << "----------------------------------" << std::endl;
+    //std::cout << "----------------------------------" << std::endl;
     //script::system<script::documentation>::dump_data();
   }
   catch(std::exception const &e)
   { std::cerr << "exception: " << e.what() << std::endl; }
   catch(...)
   { std::cerr << "unknown exception" << std::endl; }
+
+  jest::worker const j{};
+  return j();
 }

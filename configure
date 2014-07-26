@@ -189,9 +189,9 @@ log_end " done"
 # Update source files, if needed
 log_start "Patching source files..."
 systems=
-[[ $system_documentation == 1 ]] && systems="documentation, "$systems
-[[ $system_ruby == 1 ]] && systems="ruby, "$systems
-[[ $system_chai == 1 ]] && systems="chai, "$systems
+[[ $system_documentation == 1 ]] && systems="::script::documentation_tag, "$systems
+[[ $system_ruby == 1 ]] && systems="::script::ruby_tag, "$systems
+[[ $system_chai == 1 ]] && systems="::script::chai_tag, "$systems
 systems=$(echo $systems | sed 's/,$//')
 cat > include/$project/detail/gen_config.hpp <<EOF
 /* This file was automagically generated; don't fuck with it.

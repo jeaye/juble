@@ -24,7 +24,7 @@ namespace script
       {
         int const _[]
         {(
-            std::cout << "enabled system: "
+            std::cerr << "enabled system: "
                       << system_traits<Systems>::name
                       << std::endl
             , 0)...
