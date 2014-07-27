@@ -17,8 +17,14 @@ namespace script
     using unary_func_t = value_type (*)(value_type);
     using any_func_t = value_type (*)(ANYARGS);
 #undef ANYARGS
-    auto get_type(value_type const value)
-    { return TYPE(value); }
+    enum class type
+    {
+      object = T_OBJECT,
+      string = T_STRING,
+      nil = T_NIL
+    };
+    type get_type(value_type const value)
+    { return static_cast<type>(TYPE(value)); }
 #undef TYPE
 
     /* TODO: to_ruby string, array, etc. from_ruby array, etc. */
@@ -36,6 +42,12 @@ namespace script
     {
       static value_type convert(T const data)
       { return INT2NUM(data); }
+    };
+    template <typename T>
+    struct to_ruby_impl<T, std::enable_if_t<std::is_same<detail::bare_t<T>, std::string>::value>> final
+    {
+      static value_type convert(T const &data)
+      { return rb_str_new2(data.c_str()); }
     };
     template <typename T>
     value_type to_ruby(T const &data)
@@ -74,11 +86,17 @@ namespace script
     struct from_ruby_impl<T, std::enable_if_t<std::is_same<detail::bare_t<T>, std::string>::value>> final
     {
       static std::string convert(value_type const value)
-      { return { RSTRING_PTR(value) }; }
+      {
+        juble_assert(get_type(value) == type::string, "value_type is not string");
+        return { RSTRING_PTR(value) };
+      }
     };
     template <typename T>
     decltype(auto) from_ruby(value_type const value)
     { return from_ruby_impl<T>::convert(value); }
+    template <>
+    decltype(auto) from_ruby<void>(value_type const)
+    { }
 
 
     template <typename T, typename F, typename... Args>

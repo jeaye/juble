@@ -34,6 +34,12 @@ namespace script
   template <typename System>
   char constexpr const * call_unary_2()
   { return ""; }
+  template <typename System>
+  char constexpr const * call_get_name()
+  { return ""; }
+  template <typename System>
+  char constexpr const * call_get_age()
+  { return ""; }
 }
 
 #if JUBLE_CHAI
@@ -56,6 +62,11 @@ namespace jest
     { std::cout << i; }
     void unary_2(std::string const &s)
     { std::cout << s; }
+
+    std::string get_name()
+    { return "Thomas"; }
+    size_t get_age()
+    { return 22; }
   }
 
   template <> template <>
@@ -97,6 +108,24 @@ namespace jest
       script::system<T>::eval(script::call_unary_2<T>());
       expect_equal(out.str(), "string");
       this->clear();
+    });
+  }
+
+  template <> template <>
+  void script::non_member_group::test<2>() /* return value */
+  {
+    script::registrar::add(script::func(&detail::get_name, "get_name"));
+    script::registrar::add(script::func(&detail::get_age, "get_age"));
+
+    detail::each_system([&](auto tag)
+    {
+      using T = decltype(tag);
+
+      auto const name(script::system<T>::template eval<std::string>(script::call_get_name<T>()));
+      expect_equal(name, "Thomas");
+
+      auto const age(script::system<T>::template eval<size_t>(script::call_get_age<T>()));
+      expect_equal(age, 22ul);
     });
   }
 }
