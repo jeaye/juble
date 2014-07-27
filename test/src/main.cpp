@@ -9,9 +9,6 @@
 
 #include "generic/function/non_member.hpp"
 
-void say(std::string const &msg)
-{ std::cout << msg << std::endl; }
-
 class person final
 {
   public:

@@ -69,16 +69,22 @@ namespace script
       void add_global(G const & /* entry */)
       { }
 
-      static void eval(std::string const &src)
+      template <typename R = void>
+      static R eval(std::string const &src)
       {
         int err{};
-        rb_protect([](ruby_detail::value_type const s)
-                   { rb_eval_string((char const*)s); return Qnil; },
-                   (ruby_detail::value_type)src.c_str(),
-                   &err);
+        ruby_detail::value_type const val
+        {
+          rb_protect([](ruby_detail::value_type const s)
+          { return rb_eval_string(reinterpret_cast<char const*>(s)); },
+          (ruby_detail::value_type)src.c_str(), &err)
+        };
         if(err)
-        { std::cout << "ruby error" << std::endl; }
+        { throw std::runtime_error{ "ruby error" }; }
+        return ruby_detail::from_ruby<R>(val);
       }
+      static void eval(std::string const &src)
+      { return eval<>(src); }
 
     private:
       system()
