@@ -35,35 +35,35 @@ namespace script
       { }
       template <typename C>
       void add(type<C> const &entry)
-      { ruby_detail::value_class<C>(entry.name); }
+      { ruby::value_class<C>(entry.name); }
       template <typename C, typename... Args>
       void add(ctor<C (Args...)> const &entry)
       {
-        ruby_detail::ctor_wrapper<C (Args...)>{ entry.func };
+        ruby::ctor_wrapper<C (Args...)>{ entry.func };
         rb_define_singleton_method(
-            ruby_detail::value_class<C>(entry.name),
+            ruby::value_class<C>(entry.name),
             entry.name.c_str(),
-            reinterpret_cast<ruby_detail::any_func_t>
-              (&ruby_detail::ctor_wrapper<C (Args...)>::call),
-            ruby_detail::callback_argc);
+            reinterpret_cast<ruby::any_func_t>
+              (&ruby::ctor_wrapper<C (Args...)>::call),
+            ruby::callback_argc);
       }
       template <typename F>
       void add(func_impl<F> const &entry)
       {
-        ruby_detail::func_wrapper<F>::add(entry.func, entry.name);
+        ruby::func_wrapper<F>::add(entry.func, entry.name);
         rb_define_global_function(entry.name.c_str(),
-            reinterpret_cast<ruby_detail::any_func_t>(&ruby_detail::func_wrapper<F>::call),
-            ruby_detail::callback_argc);
+            reinterpret_cast<ruby::any_func_t>(&ruby::func_wrapper<F>::call),
+            ruby::callback_argc);
       }
       template <typename C, typename F>
       void add(mem_func_impl<C, F> const &entry)
       {
         /* TODO: store somewhere? */
-        ruby_detail::mem_func_wrapper<C, F>{ entry.func };
-        rb_define_method(ruby_detail::value_class<C>(entry.name),
+        ruby::mem_func_wrapper<C, F>{ entry.func };
+        rb_define_method(ruby::value_class<C>(entry.name),
             entry.name.c_str(),
-            reinterpret_cast<ruby_detail::any_func_t>(&ruby_detail::mem_func_wrapper<C, F>::call),
-            ruby_detail::callback_argc);
+            reinterpret_cast<ruby::any_func_t>(&ruby::mem_func_wrapper<C, F>::call),
+            ruby::callback_argc);
       }
       template <typename G>
       void add_global(G const & /* entry */)
@@ -73,15 +73,15 @@ namespace script
       static R eval(std::string const &src)
       {
         int err{};
-        ruby_detail::value_type const val
+        ruby::value_type const val
         {
-          rb_protect([](ruby_detail::value_type const s)
+          rb_protect([](ruby::value_type const s)
           { return rb_eval_string(reinterpret_cast<char const*>(s)); },
-          (ruby_detail::value_type)src.c_str(), &err)
+          (ruby::value_type)src.c_str(), &err)
         };
         if(err)
         { throw std::runtime_error{ "ruby error" }; }
-        return ruby_detail::from_ruby<R>(val);
+        return ruby::from_ruby<R>(val);
       }
       static void eval(std::string const &src)
       { return eval<>(src); }

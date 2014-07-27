@@ -88,6 +88,8 @@ namespace script
 
       chaiscript::ChaiScript chai_;
   };
+  using chai_system = system<chai_tag>;
+
   template <>
   struct system_traits<chai_tag> final
   {

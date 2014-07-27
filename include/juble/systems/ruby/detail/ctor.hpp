@@ -2,7 +2,7 @@
 
 namespace script
 {
-  namespace ruby_detail
+  namespace ruby
   {
     template <typename F>
     class ctor_wrapper;

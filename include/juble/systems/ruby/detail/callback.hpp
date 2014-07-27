@@ -2,7 +2,7 @@
 
 namespace script
 {
-  namespace ruby_detail
+  namespace ruby
   {
     /* value_type func(value_type const self, value_type const arg...) */
     inline int callback_variadic(int const n)
