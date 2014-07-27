@@ -4,7 +4,7 @@
 
 namespace script
 {
-  namespace ruby_detail
+  namespace ruby
   {
     /* TODO: Multiple functions of same type? */
 

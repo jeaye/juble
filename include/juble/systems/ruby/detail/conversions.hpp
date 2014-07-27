@@ -10,7 +10,7 @@
 
 namespace script
 {
-  namespace ruby_detail
+  namespace ruby
   {
     using value_type = VALUE;
 #undef VALUE
