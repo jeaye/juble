@@ -15,6 +15,7 @@ flags = [
 '-Itest/include',
 '-Ilib/chaiscript/include',
 '-Ilib/ruby/include',
+'-Ilib/jest/include',
 
 '-isystem',
 '../BoostParts',
