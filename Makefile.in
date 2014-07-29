@@ -59,7 +59,7 @@ ${PROJECT}_setup: setup
 
 %.cpp.o: %.cpp ${PROJECT}_setup
 	echo "  Compiling $<"
-	$(CXX) $(CXX_FLAGS) $< $(LD_LIBS) -o $(addprefix $(OUT_DIR), $(notdir $<))
+	$(CXX) $(CXX_FLAGS) $< $(LD_LIBS) -o $(addprefix $(OUT_DIR), $(notdir $(shell echo "$<" | sed 's/\.cpp//')))
 
 install:
 	export installdir=$(DESTDIR)$(INCLUDEDIR) && \
@@ -76,4 +76,4 @@ test: test_setup $(TEST_OBJECTS)
 test_setup:
 
 %.test: test_setup
-	$(OUT_DIR)/$(notdir $(shell echo $@ | sed 's/\.test//')).cpp || true
+	$(OUT_DIR)/$(notdir $(shell echo $@ | sed 's/\.test//')) || true
