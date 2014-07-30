@@ -3,6 +3,7 @@
 #include <juble/system.hpp>
 #include <juble/types.hpp>
 #include <juble/file.hpp>
+#include <juble/detail/type_name.hpp>
 
 #include <chaiscript/chaiscript.hpp>
 #include <chaiscript/chaiscript_stdlib.hpp>
@@ -29,10 +30,16 @@ namespace script
       { juble_assert(false, "unknown chai system entry"); }
       template <typename S>
       void add(type<S> const &entry)
-      { chai_.add(chaiscript::user_type<S>(), entry.name); }
-      template <typename S>
-      void add(ctor<S> const &entry)
-      { chai_.add(chaiscript::constructor<S>(), entry.name); }
+      {
+        chai_.add(chaiscript::user_type<S>(), entry.name);
+        detail::type_name<S>(entry.name);
+      }
+      template <typename C, typename... Args>
+      void add(ctor<C (Args...)> const &entry)
+      {
+        chai_.add(chaiscript::constructor<C (Args...)>(), detail::type_name<C>());
+        chai_.add(chaiscript::fun(entry.func), entry.name);
+      }
       template <typename S>
       void add(func_impl<S> const &entry)
       { chai_.add(chaiscript::fun(entry.func), entry.name); }
@@ -83,7 +90,7 @@ namespace script
 
     private:
       system()
-        : chai_(chaiscript::Std_Lib::library())
+        : chai_{ chaiscript::Std_Lib::library() }
       { }
 
       chaiscript::ChaiScript chai_;
