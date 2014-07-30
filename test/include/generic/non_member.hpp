@@ -11,7 +11,7 @@ namespace script
   template <typename... Systems>
   struct non_member
   {
-    non_member()
+    void engage()
     { std::cout.rdbuf(out.rdbuf()); }
 
     void clear()
@@ -43,10 +43,10 @@ namespace script
 }
 
 #if JUBLE_CHAI
-  #include "../../chai/function/non_member.hpp"
+  #include "../chai/non_member.hpp"
 #endif
 #if JUBLE_RUBY
-  #include "../../ruby/function/non_member.hpp"
+  #include "../ruby/non_member.hpp"
 #endif
 
 namespace jest
@@ -75,7 +75,9 @@ namespace jest
     script::registrar::add(script::func(&detail::nullary_1, "nullary_1"));
     script::registrar::add(script::func(&detail::nullary_2, "nullary_2"));
 
+    engage();
     clear();
+
     detail::each_system([&](auto tag)
     {
       using T = decltype(tag);
@@ -96,7 +98,9 @@ namespace jest
     script::registrar::add(script::func(&detail::unary_1, "unary_1"));
     script::registrar::add(script::func(&detail::unary_2, "unary_2"));
 
+    engage();
     clear();
+
     detail::each_system([&](auto tag)
     {
       using T = decltype(tag);
@@ -116,6 +120,9 @@ namespace jest
   {
     script::registrar::add(script::func(&detail::get_name, "get_name"));
     script::registrar::add(script::func(&detail::get_age, "get_age"));
+
+    engage();
+    clear();
 
     detail::each_system([&](auto tag)
     {
