@@ -162,6 +162,12 @@ log_end " done"
 
 if [[ $system_ruby == 1 ]];
 then
+  if [[ ! -f "lib/ruby/Makefile" ]];
+  then
+    pushd lib/ruby
+      ./configure
+    popd
+  fi
   RUBY_CONF_DIR=$(find lib/ruby/ -wholename '*include*config.h' -print0 \
                   | xargs -0 dirname | sed 's_/ruby$__')
   cxx_platform_flags="$cxx_platform_flags -I$RUBY_CONF_DIR"
