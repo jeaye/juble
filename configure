@@ -165,7 +165,8 @@ then
   if [[ ! -f "lib/ruby/Makefile" ]];
   then
     pushd lib/ruby
-      ./configure
+      log "Configuring ruby..."
+      autoconf && ./configure
     popd
   fi
   RUBY_CONF_DIR=$(find lib/ruby/ -wholename '*include*config.h' -print0 \
