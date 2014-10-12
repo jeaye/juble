@@ -7,3 +7,6 @@ Makefile
 
 # Output binaries
 bin/
+
+# Highlighting
+/.color_coded
