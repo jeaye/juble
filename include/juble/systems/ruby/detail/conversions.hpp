@@ -5,6 +5,7 @@
 #include <memory>
 
 #include <juble/detail/traits/attributes.hpp>
+#include <juble/detail/assert.hpp>
 
 #include "../lib/ruby/include/ruby.h"
 
