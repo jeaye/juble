@@ -49,7 +49,7 @@ namespace script
     std::string const name;
   };
   template <typename T>
-  auto func(T const * const f, std::string const &name)
+  auto func(T * const f, std::string const &name)
   {
     static_assert(std::is_function<T>::value, "invalid function pointer");
     return func_impl<T>{ f, name };
