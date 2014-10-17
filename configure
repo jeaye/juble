@@ -167,6 +167,8 @@ then
     pushd lib/ruby
       log "Configuring ruby..."
       autoconf && ./configure
+      log "Building ruby..."
+      make -j4
     popd
   fi
   RUBY_CONF_DIR=$(find lib/ruby/ -wholename '*include*config.h' -print0 \
